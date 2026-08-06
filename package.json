@@ -1,7 +1,15 @@
 {
   "name": "service-hub-customer",
+  "version": "0.1.0",
+  "description": "Customer-facing booking site for ServiceHub — browse, book, and pay for home services.",
   "private": true,
-  "version": "0.0.0",
+  "keywords": [
+    "service-marketplace",
+    "booking-platform",
+    "react",
+    "vite",
+    "shadcn-ui"
+  ],
   "type": "module",
   "scripts": {
     "dev": "vite",

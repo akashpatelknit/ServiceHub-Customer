@@ -36,11 +36,20 @@ export function useMe() {
   return query;
 }
 
-/** Runs after both login and signup: stores the session, fetches the profile (neither endpoint returns it), and merges any guest cart into the now-authenticated server cart. */
+/**
+ * Runs after both login and signup: stores the session, fetches the profile (neither endpoint
+ * returns it), and merges any guest cart into the now-authenticated server cart.
+ *
+ * Cancels the boot-time `useMe()` query first: if that query is still in flight (e.g. its first
+ * request paid a cold-start penalty) it would otherwise settle with `isError` *after* this
+ * function sets the real session, and `useMe()`'s effect would clobber it back to `null`.
+ */
 async function establishSession(tokens: { accessToken: string }, queryClient: QueryClient) {
+  await queryClient.cancelQueries({ queryKey: queryKeys.auth.me() });
+
   useAuthStore.getState().setAccessToken(tokens.accessToken);
 
-  const user = await authApi.me();
+  const user = await queryClient.fetchQuery({ queryKey: queryKeys.auth.me(), queryFn: authApi.me });
   useAuthStore.getState().setUser(user);
   useAuthStore.getState().setInitialized();
 

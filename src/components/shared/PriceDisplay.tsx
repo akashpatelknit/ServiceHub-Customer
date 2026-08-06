@@ -17,14 +17,16 @@ export function PriceDisplay({ price, mrp, unitPriceLabel, size = 'md', classNam
 
   return (
     <div className={cn('flex flex-col', className)}>
-      <div className="flex items-baseline gap-1.5">
-        <span className={cn('font-semibold text-ink-primary', size === 'md' ? 'text-base' : 'text-sm')}>
+      {/* flex-wrap + whitespace-nowrap per span: if space runs out, "₹mrp 12% off" drops
+          to its own line as whole units — it never breaks a span mid-word (e.g. "12%" / "off"). */}
+      <div className="flex flex-wrap items-baseline gap-x-1.5 gap-y-0.5">
+        <span className={cn('whitespace-nowrap font-semibold text-ink-primary', size === 'md' ? 'text-base' : 'text-sm')}>
           {formatInr(price)}
         </span>
         {hasDiscount && (
           <>
-            <span className="text-xs text-ink-muted line-through">{formatInr(mrp)}</span>
-            <span className="text-xs font-medium text-primary">{discountPercent}% off</span>
+            <span className="whitespace-nowrap text-xs text-ink-muted line-through">{formatInr(mrp)}</span>
+            <span className="whitespace-nowrap text-xs font-medium text-primary">{discountPercent}% off</span>
           </>
         )}
       </div>

@@ -1,7 +1,8 @@
 import { Link, useNavigate } from '@tanstack/react-router';
-import { LogOut, ShoppingCart, User } from 'lucide-react';
+import { LogOut, ShoppingCart, User, UserCircle } from 'lucide-react';
 import { LocationSelector } from '@/components/layout/LocationSelector';
 import { Logo } from '@/components/layout/Logo';
+import { MobileSearchOverlay } from '@/components/layout/MobileSearchOverlay';
 import { SearchBar } from '@/components/layout/SearchBar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { useLogout } from '@/queries/useAuthQueries';
@@ -35,6 +36,10 @@ export function Header() {
           </div>
 
           <div className="ml-auto flex items-center gap-1">
+            <div className="sm:hidden">
+              <MobileSearchOverlay />
+            </div>
+
             <Link
               to="/cart"
               className="relative flex size-10 items-center justify-center rounded-full text-ink-primary hover:bg-surface-hover"
@@ -66,10 +71,17 @@ export function Header() {
                     </p>
                     <p className="truncate text-ink-secondary">{user.email}</p>
                   </div>
+                  <Link
+                    to="/account"
+                    className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-ink-primary hover:bg-surface-hover"
+                  >
+                    <UserCircle className="size-4" />
+                    My account
+                  </Link>
                   <button
                     type="button"
                     onClick={handleLogout}
-                    className="mt-1 flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-danger hover:bg-danger-subtle"
+                    className="flex w-full items-center gap-2 rounded-md px-2 py-2 text-sm text-danger hover:bg-danger-subtle"
                   >
                     <LogOut className="size-4" />
                     Log out
@@ -86,10 +98,6 @@ export function Header() {
               </Link>
             )}
           </div>
-        </div>
-
-        <div className="mt-3 sm:hidden">
-          <SearchBar />
         </div>
       </div>
     </header>

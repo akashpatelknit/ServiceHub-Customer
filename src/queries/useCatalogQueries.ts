@@ -86,10 +86,10 @@ export function useService(serviceId: string | undefined) {
   });
 }
 
-export function useSearchServices(search: string) {
+export function useSearchServices(search: string, params?: ListCatalogParams) {
   return useQuery({
-    queryKey: queryKeys.services.search(search),
-    queryFn: () => catalogApi.searchServices(search),
+    queryKey: queryKeys.services.search(search, params),
+    queryFn: () => catalogApi.searchServices(search, params),
     enabled: search.trim().length > 0,
   });
 }

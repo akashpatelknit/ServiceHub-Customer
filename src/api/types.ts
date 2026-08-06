@@ -66,6 +66,17 @@ export interface SignupPayload {
   password: string;
 }
 
+/**
+ * PATCH /users/me only accepts these three fields (src/features/customer/validators/
+ * profile.validation.js) — no phoneNumber (not editable via this endpoint) and no
+ * avatar (no customer-reachable upload endpoint exists to produce a {key,url} for it).
+ */
+export interface UpdateProfilePayload {
+  firstName?: string;
+  lastName?: string;
+  email?: string;
+}
+
 export interface LoginPayload {
   identifier: string;
   password: string;
@@ -168,6 +179,46 @@ export interface ListCatalogParams {
   page?: number;
   limit?: number;
   isActive?: 'true' | 'false';
+}
+
+// ---------- Search ----------
+
+/**
+ * GET /search results. Category and Subcategory matches are merged into one
+ * `categories` array (type discriminates so the frontend can build the right link:
+ * /category/:slug for 'category', /category/:categorySlug/:slug for 'subcategory').
+ * `products` always ships empty today — Product has no slug/customer routes yet
+ * (see src/features/search/services/search.service.js on the backend) — kept in the
+ * shape so wiring real results in later is additive, not a rework.
+ */
+export interface SearchCategoryResult {
+  id: string;
+  name: string;
+  slug: string;
+  image: ImageRef | null;
+  displayType: DisplayType;
+  type: 'category' | 'subcategory';
+  /** Only present when type is 'subcategory'. */
+  categorySlug?: string | null;
+}
+
+export interface SearchServiceResult {
+  id: string;
+  name: string;
+  slug: string;
+  price: number;
+  mrp: number | null;
+  image: ImageRef | null;
+  rating: CatalogRating;
+  categorySlug: string | null;
+  subcategorySlug: string | null;
+}
+
+export interface SearchResponse {
+  query: string;
+  categories: SearchCategoryResult[];
+  services: SearchServiceResult[];
+  products: unknown[];
 }
 
 // ---------- Address ----------
@@ -278,6 +329,19 @@ export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
 export type ServiceOrderStatus = 'pending' | 'confirmed' | 'assigned' | 'in-progress' | 'completed' | 'cancelled';
 
+/** src/features/product-order/constants/orderStatus.constants.js SHIPPING_STATUSES. */
+export type ProductOrderStatus = 'pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'returned' | 'cancelled';
+
+export type ShippingStatus =
+  | 'pending'
+  | 'shipment-created'
+  | 'picked-up'
+  | 'in-transit'
+  | 'out-for-delivery'
+  | 'delivered'
+  | 'failed'
+  | 'rto';
+
 export interface AddressSnapshot {
   fullAddress: string;
   city: string;
@@ -295,25 +359,72 @@ export interface ServiceOrderItem {
   addonsSnapshot: { name: string; price: number }[];
 }
 
-export interface CustomerOrder {
+export interface ProductOrderItem {
+  productId: string;
+  productNameSnapshot: string;
+  priceSnapshot: number;
+  quantity: number;
+}
+
+/** Both ServiceOrder and ProductOrder push entries here on every status transition. */
+export interface OrderStatusHistoryEntry {
+  status: string;
+  changedAt: string;
+  changedBy?: string | null;
+  changedByModel?: 'User' | 'Vendor' | 'Admin' | 'System';
+}
+
+interface CustomerOrderBase {
   _id: string;
   orderNumber: string;
-  orderType: 'service' | 'product';
   user: string;
   paymentStatus: PaymentStatus;
   totalAmount: number;
   addressSnapshot: AddressSnapshot;
   createdAt: string;
   updatedAt: string;
-  // ServiceOrder-only fields (present when orderType === 'service')
-  items?: ServiceOrderItem[];
-  scheduledDate?: string;
-  scheduledSlot?: string;
-  status?: ServiceOrderStatus;
+  statusHistory: OrderStatusHistoryEntry[];
 }
+
+export interface ServiceCustomerOrder extends CustomerOrderBase {
+  orderType: 'service';
+  items: ServiceOrderItem[];
+  scheduledDate: string;
+  scheduledSlot: string;
+  /**
+   * Raw ObjectId only — GET /orders/:orderNumber never populates this, so no vendor
+   * name/contact reaches the customer. Only usable as an assigned/not-assigned flag.
+   */
+  assignedVendor: string | null;
+  status: ServiceOrderStatus;
+}
+
+export interface ProductCustomerOrder extends CustomerOrderBase {
+  orderType: 'product';
+  items: ProductOrderItem[];
+  shippingProvider: string;
+  trackingId: string | null;
+  awbNumber: string | null;
+  courierName: string | null;
+  shippingStatus: ShippingStatus;
+  status: ProductOrderStatus;
+}
+
+export type CustomerOrder = ServiceCustomerOrder | ProductCustomerOrder;
 
 export interface ListOrdersParams {
   page?: number;
   limit?: number;
   type?: 'service' | 'product';
+}
+
+// ---------- Vendor leads ----------
+
+/** POST /vendor-leads — interest-registration capture for the not-yet-built vendor onboarding flow, see src/features/vendor-leads on the backend. */
+export interface VendorLeadPayload {
+  name: string;
+  phone: string;
+  email: string;
+  city: string;
+  category: string;
 }

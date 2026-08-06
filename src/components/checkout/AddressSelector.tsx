@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-import { AddressForm } from '@/components/checkout/AddressForm';
+import { AddressForm } from '@/components/shared/AddressForm';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAddresses } from '@/queries/useAddressQueries';

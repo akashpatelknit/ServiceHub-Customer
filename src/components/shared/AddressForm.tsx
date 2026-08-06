@@ -1,22 +1,30 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
+import type { Address } from '@/api/types';
 import { FormField } from '@/components/shared/FormField';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { useAddAddress } from '@/queries/useAddressQueries';
+import { useAddAddress, useUpdateAddress } from '@/queries/useAddressQueries';
 import { addressSchema, type AddressFormValues } from '@/validators/addressSchemas';
 
 interface AddressFormProps {
+  /** Present in edit mode — pre-fills the form and calls useUpdateAddress instead of useAddAddress. */
+  address?: Address;
   onSaved: (addressId: string) => void;
   onCancel: () => void;
 }
 
 const LABELS: AddressFormValues['label'][] = ['Home', 'Work', 'Other'];
 
-export function AddressForm({ onSaved, onCancel }: AddressFormProps) {
+/** Shared between checkout's inline "add address" flow and the account Addresses page (add + edit). */
+export function AddressForm({ address, onSaved, onCancel }: AddressFormProps) {
   const addAddress = useAddAddress();
+  const updateAddress = useUpdateAddress();
+  const isEditing = Boolean(address);
+  const isPending = isEditing ? updateAddress.isPending : addAddress.isPending;
+  const isError = isEditing ? updateAddress.isError : addAddress.isError;
 
   const {
     register,
@@ -24,12 +32,27 @@ export function AddressForm({ onSaved, onCancel }: AddressFormProps) {
     setValue,
     watch,
     formState: { errors },
-  } = useForm<AddressFormValues>({ resolver: zodResolver(addressSchema), defaultValues: { label: 'Home' } });
+  } = useForm<AddressFormValues>({
+    resolver: zodResolver(addressSchema),
+    defaultValues: address
+      ? {
+          street: address.street,
+          city: address.city,
+          state: address.state,
+          pinCode: address.pinCode,
+          label: address.label,
+          landmark: address.landmark ?? '',
+          country: address.country,
+        }
+      : { label: 'Home' },
+  });
 
   const onSubmit = (values: AddressFormValues) => {
-    addAddress.mutate(values, {
-      onSuccess: (address) => onSaved(address._id),
-    });
+    if (isEditing && address) {
+      updateAddress.mutate({ addressId: address._id, payload: values }, { onSuccess: (updated) => onSaved(updated._id) });
+    } else {
+      addAddress.mutate(values, { onSuccess: (created) => onSaved(created._id) });
+    }
   };
 
   return (
@@ -69,13 +92,13 @@ export function AddressForm({ onSaved, onCancel }: AddressFormProps) {
         </RadioGroup>
       </div>
 
-      {addAddress.isError && (
+      {isError && (
         <p className="rounded-md bg-danger-subtle px-3 py-2 text-sm text-danger-subtle-text">Could not save this address. Please try again.</p>
       )}
 
       <div className="flex gap-2">
-        <Button type="submit" disabled={addAddress.isPending}>
-          {addAddress.isPending ? 'Saving…' : 'Save address'}
+        <Button type="submit" disabled={isPending}>
+          {isPending ? 'Saving…' : 'Save address'}
         </Button>
         <Button type="button" variant="ghost" onClick={onCancel}>
           Cancel

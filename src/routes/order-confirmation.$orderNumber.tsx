@@ -53,30 +53,37 @@ function OrderConfirmationPage() {
       </div>
 
       <div className="mt-8 rounded-card border border-border bg-card p-5">
-        {order.items && order.items.length > 0 && (
-          <div className="flex flex-col gap-3">
-            {order.items.map((item, i) => (
-              <div key={i} className="flex items-start justify-between gap-3 text-sm">
-                <div>
-                  <p className="font-medium text-ink-primary">{item.serviceNameSnapshot}</p>
-                  {item.addonsSnapshot.map((addon, j) => (
-                    <p key={j} className="text-xs text-ink-secondary">
-                      + {addon.name}
-                    </p>
-                  ))}
+        <div className="flex flex-col gap-3">
+          {order.orderType === 'service'
+            ? order.items.map((item, i) => (
+                <div key={i} className="flex items-start justify-between gap-3 text-sm">
+                  <div>
+                    <p className="font-medium text-ink-primary">{item.serviceNameSnapshot}</p>
+                    {item.addonsSnapshot.map((addon, j) => (
+                      <p key={j} className="text-xs text-ink-secondary">
+                        + {addon.name}
+                      </p>
+                    ))}
+                  </div>
+                  <span className="shrink-0 font-medium text-ink-primary">₹{item.priceSnapshot.toLocaleString('en-IN')}</span>
                 </div>
-                <span className="shrink-0 font-medium text-ink-primary">₹{item.priceSnapshot.toLocaleString('en-IN')}</span>
-              </div>
-            ))}
-          </div>
-        )}
+              ))
+            : order.items.map((item, i) => (
+                <div key={i} className="flex items-start justify-between gap-3 text-sm">
+                  <p className="font-medium text-ink-primary">
+                    {item.productNameSnapshot} {item.quantity > 1 && `× ${item.quantity}`}
+                  </p>
+                  <span className="shrink-0 font-medium text-ink-primary">₹{item.priceSnapshot.toLocaleString('en-IN')}</span>
+                </div>
+              ))}
+        </div>
 
         <div className="mt-4 flex items-center justify-between border-t border-border pt-3 text-base font-semibold">
           <span className="text-ink-primary">Total</span>
           <span className="text-ink-primary">₹{order.totalAmount.toLocaleString('en-IN')}</span>
         </div>
 
-        {order.scheduledDate && order.scheduledSlot && (
+        {order.orderType === 'service' && (
           <p className="mt-3 text-sm text-ink-secondary">
             Scheduled for {new Date(order.scheduledDate).toLocaleDateString('en-IN', { weekday: 'long', day: 'numeric', month: 'long' })},{' '}
             {order.scheduledSlot}

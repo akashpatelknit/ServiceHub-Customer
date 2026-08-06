@@ -80,6 +80,19 @@ export function useLogout() {
   });
 }
 
+/** PATCH /auth/user/change-password clears cookies server-side and requires re-login — mirrors useLogout's local cleanup. */
+export function useChangePassword() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ oldPassword, newPassword }: { oldPassword: string; newPassword: string }) =>
+      authApi.changePassword(oldPassword, newPassword),
+    onSuccess: () => {
+      useAuthStore.getState().clearSession();
+      queryClient.clear();
+    },
+  });
+}
+
 export function useForgotPassword() {
   return useMutation({ mutationFn: (email: string) => authApi.forgotPassword(email) });
 }

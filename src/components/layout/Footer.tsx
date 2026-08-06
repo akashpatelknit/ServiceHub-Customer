@@ -1,10 +1,35 @@
 import type { SVGProps } from 'react';
+import type { LinkProps } from '@tanstack/react-router';
+import { Link } from '@tanstack/react-router';
 import { Logo } from '@/components/layout/Logo';
 
-const FOOTER_COLUMNS: { title: string; links: string[] }[] = [
-  { title: 'Company', links: ['About us', 'ServiceHub blog', 'Careers', 'Press'] },
-  { title: 'For customers', links: ['Help & support', 'Terms & conditions', 'Privacy policy', 'Cancellation & refunds'] },
-  { title: 'For professionals', links: ['Register as a professional', 'Partner app', 'Vendor resources'] },
+const FOOTER_COLUMNS: { title: string; links: { label: string; to: LinkProps['to'] }[] }[] = [
+  {
+    title: 'Company',
+    links: [
+      { label: 'About us', to: '/about' },
+      { label: 'ServiceHub blog', to: '/blog' },
+      { label: 'Careers', to: '/careers' },
+      { label: 'Press', to: '/press' },
+    ],
+  },
+  {
+    title: 'For customers',
+    links: [
+      { label: 'Help & support', to: '/help' },
+      { label: 'Terms & conditions', to: '/terms' },
+      { label: 'Privacy policy', to: '/privacy' },
+      { label: 'Cancellation & refunds', to: '/cancellation-refunds' },
+    ],
+  },
+  {
+    title: 'For professionals',
+    links: [
+      { label: 'Register as a professional', to: '/register-professional' },
+      { label: 'Partner app', to: '/partner-app' },
+      { label: 'Vendor resources', to: '/vendor-resources' },
+    ],
+  },
 ];
 
 // lucide-react dropped brand/social icons — small inline outlines instead of adding a new icon package.
@@ -44,11 +69,18 @@ function LinkedinIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
+// TODO: swap '#' for real profile URLs before launch — accounts don't exist yet.
 const SOCIAL_LINKS = [
-  { label: 'Facebook', icon: FacebookIcon },
-  { label: 'Instagram', icon: InstagramIcon },
-  { label: 'Twitter', icon: TwitterIcon },
-  { label: 'LinkedIn', icon: LinkedinIcon },
+  { label: 'Facebook', icon: FacebookIcon, href: '#' },
+  { label: 'Instagram', icon: InstagramIcon, href: '#' },
+  { label: 'Twitter', icon: TwitterIcon, href: '#' },
+  { label: 'LinkedIn', icon: LinkedinIcon, href: '#' },
+];
+
+// TODO: swap '#' for real store listing URLs once the customer/vendor apps are actually published.
+const APP_STORE_LINKS = [
+  { label: 'Get it on Google Play', href: '#' },
+  { label: 'Download on the App Store', href: '#' },
 ];
 
 export function Footer() {
@@ -66,10 +98,10 @@ export function Footer() {
               <h3 className="text-sm font-semibold text-ink-primary">{column.title}</h3>
               <ul className="mt-3 space-y-2">
                 {column.links.map((link) => (
-                  <li key={link}>
-                    <a href="#" className="text-sm text-ink-secondary hover:text-ink-link">
-                      {link}
-                    </a>
+                  <li key={link.label}>
+                    <Link to={link.to} className="text-sm text-ink-secondary hover:text-ink-link">
+                      {link.label}
+                    </Link>
                   </li>
                 ))}
               </ul>
@@ -79,10 +111,12 @@ export function Footer() {
 
         <div className="mt-10 flex flex-col items-center justify-between gap-6 border-t border-border pt-6 sm:flex-row">
           <div className="flex items-center gap-4">
-            {SOCIAL_LINKS.map(({ label, icon: Icon }) => (
+            {SOCIAL_LINKS.map(({ label, icon: Icon, href }) => (
               <a
                 key={label}
-                href="#"
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
                 aria-label={label}
                 className="flex size-9 items-center justify-center rounded-full border border-line text-ink-secondary hover:border-primary hover:text-primary"
               >
@@ -92,18 +126,17 @@ export function Footer() {
           </div>
 
           <div className="flex items-center gap-3">
-            <a
-              href="#"
-              className="flex items-center gap-2 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink-primary hover:bg-surface-hover"
-            >
-              Get it on Google Play
-            </a>
-            <a
-              href="#"
-              className="flex items-center gap-2 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink-primary hover:bg-surface-hover"
-            >
-              Download on the App Store
-            </a>
+            {APP_STORE_LINKS.map((badge) => (
+              <a
+                key={badge.label}
+                href={badge.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink-primary hover:bg-surface-hover"
+              >
+                {badge.label}
+              </a>
+            ))}
           </div>
         </div>
 

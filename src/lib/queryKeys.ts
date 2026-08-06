@@ -28,7 +28,7 @@ export const queryKeys = {
   services: {
     all: (params?: ListServicesParams) => ['services', params] as const,
     detail: (serviceId: string | undefined) => ['services', serviceId] as const,
-    search: (query: string) => ['services', 'search', query] as const,
+    search: (query: string, params?: ListCatalogParams) => ['services', 'search', query, params] as const,
   },
   addOns: {
     all: (params?: ListAddOnsParams) => ['addOns', params] as const,
@@ -36,7 +36,13 @@ export const queryKeys = {
   addresses: {
     all: () => ['addresses'] as const,
   },
+  search: {
+    suggestions: (query: string) => ['search', 'suggestions', query] as const,
+    full: (query: string) => ['search', 'full', query] as const,
+  },
   orders: {
+    /** Prefix for invalidating every list/infinite-list variant regardless of filters. */
+    lists: () => ['orders', 'list'] as const,
     list: (filters?: ListOrdersParams) => ['orders', 'list', filters] as const,
     detail: (orderNumber: string | undefined) => ['orders', orderNumber] as const,
   },

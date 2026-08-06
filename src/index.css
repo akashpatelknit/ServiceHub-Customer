@@ -1,0 +1,214 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+  Design tokens translated 1:1 from service-hub-admin/src/theme/tokens.js.
+  Admin uses hand-rolled hex + `dark:` variant classes; this file ports the
+  same hex values into shadcn's HSL CSS-variable convention so the two
+  codebases share an identical brand palette despite different architectures.
+  Standard shadcn slots (background/primary/border/etc.) map onto admin's
+  page/surface/primary/border tokens. Extra --sh-* variables preserve the
+  rest of admin's palette (hover/active steps, status colors) for parity.
+*/
+
+@layer base {
+  :root {
+    --background: 228 2% 97%;
+    --foreground: 215 28% 17%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 215 28% 17%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 215 28% 17%;
+
+    --primary: 142 76% 36%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 221 83% 53%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 210 1% 98%;
+    --muted-foreground: 220 9% 46%;
+
+    /* Neutral hover/highlight background — shadcn's generated components (ghost
+       button, select/calendar item hover, etc.) use bg-accent/text-accent-foreground
+       for this structurally, unrelated to any brand color. The admin's violet brand
+       "accent" lives separately below as --sh-accent — see tailwind.config.ts's
+       `violet` color family. Conflating the two made every ghost-button hover flash
+       violet. */
+    --accent: 210 1% 98%;
+    --accent-foreground: 215 28% 17%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 3% 91%;
+    --input: 220 3% 91%;
+    --ring: 142 76% 36%;
+
+    --radius: 0.5rem;
+
+    /* admin-parity extras: full color-family steps + status tokens */
+    --sh-accent: 262 83% 58%;
+    --sh-accent-foreground: 0 0% 100%;
+
+    --sh-primary-hover: 142 72% 29%;
+    --sh-primary-active: 143 64% 24%;
+    --sh-primary-subtle: 138 76% 97%;
+    --sh-primary-subtle-text: 143 64% 24%;
+    --sh-primary-subtle-border: 141 79% 85%;
+
+    --sh-secondary-hover: 224 76% 48%;
+    --sh-secondary-active: 226 71% 40%;
+    --sh-secondary-subtle: 214 100% 97%;
+    --sh-secondary-subtle-text: 224 76% 48%;
+    --sh-secondary-subtle-border: 213 97% 87%;
+
+    --sh-danger: 0 72% 51%;
+    --sh-danger-hover: 0 74% 42%;
+    --sh-danger-active: 0 70% 35%;
+    --sh-danger-subtle: 0 86% 97%;
+    --sh-danger-subtle-text: 0 74% 42%;
+    --sh-danger-subtle-border: 0 96% 89%;
+
+    --sh-warning: 32 95% 44%;
+    --sh-warning-hover: 26 90% 37%;
+    --sh-warning-active: 23 83% 31%;
+    --sh-warning-subtle: 48 100% 96%;
+    --sh-warning-subtle-text: 26 90% 37%;
+    --sh-warning-subtle-border: 48 97% 77%;
+
+    --sh-accent-hover: 263 70% 50%;
+    --sh-accent-active: 263 69% 42%;
+    --sh-accent-subtle: 250 100% 98%;
+    --sh-accent-subtle-text: 263 70% 50%;
+    --sh-accent-subtle-border: 251 91% 89%;
+
+    --sh-surface-hover: 210 1% 98%;
+    --sh-surface-sunken: 210 1% 98%;
+    --sh-border-strong: 216 6% 84%;
+    --sh-ink-secondary: 220 9% 46%;
+    --sh-ink-muted: 218 11% 65%;
+    --sh-ink-link: 221 83% 53%;
+
+    --sh-status-active-bg: 138 76% 97%;
+    --sh-status-active-text: 143 64% 24%;
+    --sh-status-active-border: 141 79% 85%;
+    --sh-status-inactive-bg: 0 86% 97%;
+    --sh-status-inactive-text: 0 74% 42%;
+    --sh-status-inactive-border: 0 96% 89%;
+    --sh-status-pending-bg: 48 100% 96%;
+    --sh-status-pending-text: 26 90% 37%;
+    --sh-status-pending-border: 48 97% 77%;
+  }
+
+  .dark {
+    --background: 220 17% 7%;
+    --foreground: 220 1% 96%;
+
+    --card: 222 16% 12%;
+    --card-foreground: 220 1% 96%;
+
+    --popover: 222 16% 12%;
+    --popover-foreground: 220 1% 96%;
+
+    --primary: 142 71% 45%;
+    --primary-foreground: 220 17% 7%;
+
+    --secondary: 217 91% 60%;
+    --secondary-foreground: 220 17% 7%;
+
+    --muted: 222 18% 11%;
+    --muted-foreground: 223 9% 52%;
+
+    --accent: 225 19% 17%;
+    --accent-foreground: 220 1% 96%;
+
+    --destructive: 0 91% 71%;
+    --destructive-foreground: 220 17% 7%;
+
+    --border: 222 13% 19%;
+    --input: 222 13% 19%;
+
+    --sh-accent: 255 92% 76%;
+    --sh-accent-foreground: 220 17% 7%;
+    --ring: 142 71% 45%;
+
+    --sh-primary-hover: 142 76% 36%;
+    --sh-primary-active: 142 72% 29%;
+    --sh-primary-subtle: 145 38% 11%;
+    --sh-primary-subtle-text: 142 69% 58%;
+    --sh-primary-subtle-border: 144 61% 20%;
+
+    --sh-secondary-hover: 221 83% 53%;
+    --sh-secondary-active: 224 76% 48%;
+    --sh-secondary-subtle: 220 48% 12%;
+    --sh-secondary-subtle-text: 213 94% 68%;
+    --sh-secondary-subtle-border: 224 64% 33%;
+
+    --sh-danger: 0 91% 71%;
+    --sh-danger-hover: 0 84% 60%;
+    --sh-danger-active: 0 72% 51%;
+    --sh-danger-subtle: 355 38% 12%;
+    --sh-danger-subtle-text: 0 94% 82%;
+    --sh-danger-subtle-border: 0 63% 31%;
+
+    --sh-warning: 43 96% 56%;
+    --sh-warning-hover: 38 92% 50%;
+    --sh-warning-active: 32 95% 44%;
+    --sh-warning-subtle: 39 45% 11%;
+    --sh-warning-subtle-text: 46 97% 65%;
+    --sh-warning-subtle-border: 22 78% 26%;
+
+    --sh-accent-hover: 258 90% 66%;
+    --sh-accent-active: 262 83% 58%;
+    --sh-accent-subtle: 260 33% 16%;
+    --sh-accent-subtle-text: 252 95% 85%;
+    --sh-accent-subtle-border: 273 67% 39%;
+
+    --sh-surface-hover: 225 19% 17%;
+    --sh-surface-sunken: 222 18% 11%;
+    --sh-border-strong: 222 14% 25%;
+    --sh-ink-secondary: 223 13% 72%;
+    --sh-ink-muted: 223 9% 52%;
+    --sh-ink-link: 213 94% 68%;
+
+    --sh-status-active-bg: 145 38% 11%;
+    --sh-status-active-text: 142 69% 58%;
+    --sh-status-active-border: 144 61% 20%;
+    --sh-status-inactive-bg: 355 38% 12%;
+    --sh-status-inactive-text: 0 94% 82%;
+    --sh-status-inactive-border: 0 63% 31%;
+    --sh-status-pending-bg: 39 45% 11%;
+    --sh-status-pending-text: 46 97% 65%;
+    --sh-status-pending-border: 22 78% 26%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    margin: 0;
+    font-family: 'Poppins', 'Lexend', sans-serif;
+  }
+}
+
+/* Flicker-free theme switch: suppress transitions for one frame while toggling */
+.theme-switching * {
+  transition: none !important;
+}
+
+/* Hide scrollbar for horizontal card rows while staying scrollable */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
